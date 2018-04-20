@@ -1,3 +1,4 @@
+"""Exploring basic functionality of flask framework"""
 # import Flask class from flask module
 from flask import Flask
 
