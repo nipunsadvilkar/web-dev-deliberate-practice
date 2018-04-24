@@ -5,7 +5,7 @@
   </head>
   <body>
     <div class='container'>
-      {% for message in gget_flashed_messages() %}
+      {% for message in get_flashed_messages() %}
         <div class='flash'>{{ message }}</div>
       {% endfor %}
       {% if error  %}
