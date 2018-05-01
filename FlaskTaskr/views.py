@@ -3,7 +3,7 @@ from functools import wraps
 
 from flask import Flask, flash, redirect, render_template, \
         request, session, url_for, g
-
+from forms import AddTaskForm
 
 app = Flask(__name__)
 app.config.from_object('_config')
@@ -28,7 +28,7 @@ def login_required(test):
 def logout():
     session.pop('logged_in', None)
     flash('Goodbye!')
-    redirect(url_for('login'))
+    return redirect(url_for('login'))
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -87,7 +87,7 @@ def new_task():
 
 
 # Mark tasks as complete
-@app.route('complete/<int:task_id>/')
+@app.route('/complete/<int:task_id>/')
 @login_required
 def complete(task_id):
     g.db = connect_db()
