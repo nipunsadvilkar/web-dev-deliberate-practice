@@ -3,14 +3,13 @@ from flask import Flask, flash, redirect, render_template, \
         request, session, url_for
 from forms import AddTaskForm
 from flask_sqlalchemy import SQLAlchemy
-
+from datetime import datetime
 
 # config
 app = Flask(__name__)
 app.config.from_object('_config')
 db = SQLAlchemy(app)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 from models import Task
 
@@ -60,19 +59,18 @@ def tasks():
 
 
 # Add new task (default status = 1)
-@app.route('/add/', methods=['POST'])
+@app.route('/add/', methods=['GET', 'POST'])
 @login_required
 def new_task():
     form = AddTaskForm(request.form)
     if request.method == 'POST':
-        if form.validate_on_submit():
-            new_task = Task(form.name.data,
-                            form.due_date.data,
-                            form.priority.data,
-                            '1')
-            db.session.add(new_task)
-            db.session.commit()
-            flash('New entry was successfully posted. Thanks!')
+        new_task = Task(form.name.data,
+                        form.due_date.data,
+                        form.priority.data,
+                        1)
+        db.session.add(new_task)
+        db.session.commit()
+        flash('New entry was successfully posted. Thanks!')
     return redirect(url_for('tasks'))
 
 
@@ -84,7 +82,7 @@ def complete(task_id):
     db.session.query(Task).filter_by(task_id=new_id).update({'status': '0'})
     db.session.commit()
     flash('The task is complete. Nice.')
-    redirect(url_for('tasks'))
+    return redirect(url_for('tasks'))
 
 
 # delete tasks
@@ -93,5 +91,6 @@ def complete(task_id):
 def delete_entry(task_id):
     new_id = task_id
     db.session.query(Task).filter_by(task_id=new_id).delete()
+    db.session.commit()
     flash('The task was deleted. Why not add new one?')
     return redirect(url_for('tasks'))
