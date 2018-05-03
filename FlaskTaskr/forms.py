@@ -7,9 +7,9 @@ from wtforms.validators import DataRequired
 class AddTaskForm(FlaskForm):
     task_id = IntegerField()
     name = StringField('Task Name', validators=[DataRequired()])
-    due_date = DateField('Date Due (mm/dd/yyyy)',
+    due_date = DateField('Date Due (yyyy/mm/dd)',
                          validators=[DataRequired()],
-                         format='%m/%d/%Y')
+                         format='%Y-%m-%d')
     priority = SelectField('Priority',
                            validators=[DataRequired()],
                            choices=[('1', '1'), ('2', '2'), ('3', '3'),
