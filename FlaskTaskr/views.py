@@ -1,9 +1,8 @@
 from functools import wraps
 from flask import Flask, flash, redirect, render_template, \
         request, session, url_for
-from forms import AddTaskForm
+from forms import AddTaskForm, RegisterForm, LoginForm
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
 # config
 app = Flask(__name__)
@@ -11,7 +10,24 @@ app.config.from_object('_config')
 db = SQLAlchemy(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-from models import Task
+from models import Task, User
+
+
+@app.route('/register/', methods=['GET', 'POST'])
+def register():
+    error = None
+    form = RegisterForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            new_user = User(
+                            form.name.data,
+                            form.email.data,
+                            form.password.data,)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Thanks for registering. Please login.')
+            return redirect(url_for('login'))
+    return render_template('register.html', form=form, error=error)
 
 
 def login_required(test):
