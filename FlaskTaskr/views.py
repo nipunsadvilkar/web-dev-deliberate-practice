@@ -3,6 +3,7 @@ from flask import Flask, flash, redirect, render_template, \
         request, session, url_for
 from forms import AddTaskForm, RegisterForm, LoginForm
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 # config
 app = Flask(__name__)
@@ -50,16 +51,20 @@ def logout():
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    error = None
+    form = LoginForm(request.form)
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME'] \
-                or request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid Credentials. Please try again.'
-            return render_template('login.html', error=error)
+        if form.validate():
+            user = User.query.filter_by(name=request.form['name']).first()
+            if user is not None and user.password == request.form['password']:
+                session['logged_in'] = True
+                flash('Welcome!')
+                return redirect(url_for('tasks'))
+            else:
+                error = 'Invalid username or password.'
         else:
-            session['logged_in'] = True
-            flash('Welcome!')
-            return redirect(url_for('tasks'))
-    return render_template('login.html')
+            error = 'Both fields are required.'
+    return render_template('login.html', form=form, error=error)
 
 
 # list all open and closed tasks
@@ -83,7 +88,9 @@ def new_task():
         new_task = Task(form.name.data,
                         form.due_date.data,
                         form.priority.data,
-                        1)
+                        datetime.datetime.utcnow(),
+                        '1',
+                        '1')
         db.session.add(new_task)
         db.session.commit()
         flash('New entry was successfully posted. Thanks!')
