@@ -1,13 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, IntegerField, \
     SelectField, PasswordField
-from wtforms.validators import DataRequired, EqualTo, Length
+from wtforms.validators import DataRequired, EqualTo, Length, Email
 
 
 class AddTaskForm(FlaskForm):
     task_id = IntegerField()
     name = StringField('Task Name', validators=[DataRequired()])
-    due_date = DateField('Date Due (yyyy/mm/dd)',
+    due_date = DateField('Date Due (yyyy-mm-dd)',
                          validators=[DataRequired()],
                          format='%Y-%m-%d')
     priority = SelectField('Priority',
@@ -22,7 +22,7 @@ class AddTaskForm(FlaskForm):
 class RegisterForm(FlaskForm):
     name = StringField('Username', validators=[DataRequired(),
                                                Length(min=6, max=25)])
-    email = StringField('Email', validators=[DataRequired(),
+    email = StringField('Email', validators=[DataRequired(), Email(),
                                              Length(min=6, max=40)])
     password = PasswordField('Password',
                              validators=[DataRequired(),
@@ -30,9 +30,8 @@ class RegisterForm(FlaskForm):
     confirm = PasswordField('Repeat Password',
                             validators=[
                                 DataRequired(),
-                                EqualTo(
-                                    'password',
-                                    message='Password must match')])
+                                EqualTo('password')]
+                            )
 
 
 class LoginForm(FlaskForm):
