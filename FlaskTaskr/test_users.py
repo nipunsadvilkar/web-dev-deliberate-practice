@@ -177,5 +177,23 @@ class TestsUser(unittest.TestCase):
             self.assertEqual(user.name, 'Johnny')
 
 
+    def test_default_user_role(self):
+
+        db.session.add(
+            User(
+                "Johnny",
+                "john@doe.com",
+                "johnny"
+            )
+        )
+
+        db.session.commit()
+
+        users = db.session.query(User).all()
+        print(users)
+        for user in users:
+            self.assertEqual(user.role, 'user')
+
+
 if __name__ == '__main__':
     unittest.main()
