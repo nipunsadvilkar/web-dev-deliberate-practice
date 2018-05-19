@@ -1,4 +1,4 @@
-from views import db
+from flasktaskr import db
 import datetime
 
 
