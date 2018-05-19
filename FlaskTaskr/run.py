@@ -1,2 +1,2 @@
-from views import app
+from flasktaskr import app
 app.run(debug=True)
