@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from flasktaskr import app, db
+from flasktaskr import app, db, bcrypt
 from flasktaskr._config import basedir
 from flasktaskr.models import Task, User
 
@@ -47,7 +47,9 @@ class TestsUser(unittest.TestCase):
         return self.app.get('logout/', follow_redirects=True)
 
     def create_user(self, name, email, password):
-        new_user = User(name=name, email=email, password=password)
+        new_user = User(name=name,
+                        email=email,
+                        password=bcrypt.generate_password_hash(password))
         db.session.add(new_user)
         db.session.commit()
 
